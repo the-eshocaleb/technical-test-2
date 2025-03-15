@@ -35,7 +35,7 @@ const ProjectList = () => {
 
   return (
     <div className="w-full p-2 md:!px-8">
-      <Create onChangeSearch={handleSearch} />
+      <Create onChangeSearch={handleSearch} history={history} setProjects={setProjects} projects={projects} />
       <div className="py-3">
         {activeProjects.map((hit) => {
           return (
@@ -92,7 +92,7 @@ const Budget = ({ project }) => {
   return <ProgressBar percentage={width} max={budget_max_monthly} value={total} />;
 };
 
-const Create = ({ onChangeSearch }) => {
+const Create = ({ onChangeSearch, history, setProjects, projects }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -153,6 +153,15 @@ const Create = ({ onChangeSearch }) => {
                   if (!res.ok) throw res;
                   toast.success("Created!");
                   setOpen(false);
+                  
+                  // Update the projects list with the new project
+                  if (res.data) {
+                    // Add the new project to the beginning of the projects array
+                    const updatedProjects = [res.data, ...projects];
+                    setProjects(updatedProjects);
+                    
+                    // The activeProjects will be updated automatically via the useEffect
+                  }
                 } catch (e) {
                   console.log(e);
                   toast.error("Some Error!", e.code);
